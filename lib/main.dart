@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'authorization_bloc.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
+import 'activity_player_page.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -24,7 +25,7 @@ class App extends StatelessWidget {
         backgroundColor: Colors.grey[500],
         elevation: 0,
       ),
-      body: createContent(),
+      body: ActivityPlayer()//createContent(),
     );
   }
 
