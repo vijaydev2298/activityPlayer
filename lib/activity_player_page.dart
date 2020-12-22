@@ -1,232 +1,129 @@
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'ActivityPlayerData.dart';
-
 class ActivityPlayer extends StatefulWidget {
+  final data;
+  ActivityPlayer(this.data);
   @override
   _ActivityPlayerState createState() => _ActivityPlayerState();
 }
 
 class _ActivityPlayerState extends State<ActivityPlayer> {
-  List exerciseData;
-  FocusNode myFocusNode;
-  TextEditingController controller = TextEditingController();
-  List optionsAndAns = [];
-  String isRight = "null";
-  List answers = [];
-
-  Future<ActivityPlayerData> getActivityPlayerData() async {
-    String endPoint =
-        "https://getestoscar.blob.core.windows.net/content/test/lesson/61f7efc9-c3db-4142-8b06-9bc0f5d915f9/default.json";
-    Response response = await get(endPoint);
-    if (response.statusCode == 200) {
-      final exec = activityPlayerDataFromJson(response.body);
-      final fillInTheGapsClick = [];
-      int index = 0;
-      for (int i = 0; i < exec.exercises.length; i++) {
-        if (exec.exercises[i].type == "fillinthegapsclick") {
-          fillInTheGapsClick.insert(index, exec.exercises[i]);
-          index += 1;
-        }
-      }
-      setState(() {
-        exerciseData = fillInTheGapsClick;
-      });
-    }
-  }
+  List<String> question = [];
+  String subTitle = "";
+  List<String> availableOptions = [];
 
   void initState() {
     super.initState();
-    getActivityPlayerData();
-    myFocusNode = FocusNode();
+    //setDataReady();
   }
 
   void dispose() {
     super.dispose();
-    myFocusNode.dispose();
-  }
-
-  Widget getTextWidgets(List exercises) {
-    return Column(children: <Widget>[
-      Wrap(
-          children: exercises.map((e) {
-        String htmlTagData = e.config['content'].toString();
-        //htmlTagData = htmlTagData.replaceAll("<c-blank></c-blank>", "<input type=text/>");
-        final document = parse(htmlTagData);
-        final String parsedData = parse(document.body.text).body.text;
-        List<String> excerciseQuestion = parsedData.split(".");
-        final options = e.config['items'];
-        List userDisplayOptions = [];
-        for (int i = 0; i < options.length; i++) {
-          if (options[i] != null) {
-            final obj = options[i];
-            userDisplayOptions.insert(i, obj['label']);
-          }
-        }
-        var textEditingControllers = <TextEditingController>[];
-        var textFields = <TextField>[];
-        userDisplayOptions.forEach((str) {
-          var textEditingController = new TextEditingController(text: str);
-          textEditingControllers.add(textEditingController);
-          return textFields.add(new TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(border: OutlineInputBorder()),
-          ));
-        });
-        setState(() {
-          optionsAndAns = userDisplayOptions;
-        });
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: [
-                Icon(Icons.assignment_turned_in_outlined,
-                    color: Colors.amber, size: 40.0),
-                SizedBox(width: 12.0),
-                Text(
-                  e.title,
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.0),
-            Text(e.subtitle.toString().substring(3, 52),
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0)),
-            SizedBox(height: 12.0),
-            Wrap(
-              children: excerciseQuestion.map((ques) {
-                return Wrap(children: [
-                  Text(
-                    ques.trim(),
-                    style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(width: 12.0),
-                  Container(
-                      color: isRight != "null"
-                          ? isRight == "true"
-                              ? Colors.green
-                              : Colors.red
-                          : Colors.white,
-                      width: 140.0,
-                      height: 20.0,
-                      child: TextFormField(
-                        //controller: answers[0].text,
-                        readOnly: true,
-                        decoration:
-                            InputDecoration(border: OutlineInputBorder()),
-                      )),
-                ]);
-              }).toList(),
-            ),
-            SizedBox(height: 12.0),
-            Wrap(
-                children: userDisplayOptions.map((opt) {
-              int counter = 0;
-              return Row(children: [
-                FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        TextEditingController $opt =
-                            new TextEditingController();
-                        $opt.text = opt;
-                        answers.insert(counter, $opt);
-                      });
-                      print(answers);
-                      counter = counter + 1;
-                    },
-                    child: Text(opt),
-                    color: Colors.amber),
-                SizedBox(width: 12.0)
-              ]);
-            }).toList())
-          ],
-        );
-      }).toList()),
-      Center(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Wrap(children: [
-          FlatButton(
-            onPressed: () {},
-            color: Colors.blue[500],
-            textColor: Colors.white,
-            child: Text(
-              'Check Answers',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-          ),
-          SizedBox(width: 6.0),
-          FlatButton(
-            onPressed: () {
-              setState(() {
-                controller.text = "";
-              });
-            },
-            color: Colors.red[300],
-            textColor: Colors.white,
-            child: Text(
-              'Clear',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-          ),
-        ])
-      ])),
-      Center(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FlatButton(
-            onPressed: () {
-              setState(() {
-                controller.text = "";
-              });
-            },
-            color: Colors.green[300],
-            textColor: Colors.white,
-            child: Text(
-              'Show Correct Answers',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-          ),
-          SizedBox(width: 6.0),
-          FlatButton(
-            onPressed: () {
-              setState(() {
-                controller.text = "";
-              });
-            },
-            color: Colors.green[300],
-            textColor: Colors.white,
-            child: Text(
-              'Retry',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-          ),
-        ],
-      ))
-    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
+    final htmlTagData = widget.data['config'];
+    String contents = htmlTagData['content'].toString();
+    final document = parse(contents);
+    final String parsedData = parse(document.body.text).body.text;
+    List<String> excerciseQuestion = parsedData.split(".");
+    final items = htmlTagData['items'];
+    List<String> availableOptionData = [];
+    for (int i = 0; i < items.length; i++) {
+      final temp = items[i];
+      availableOptionData.insert(i, temp['label']);
+    }
+    setState(() {
+      question = excerciseQuestion;
+      subTitle = widget.data['subTitle'];
+      availableOptions = availableOptionData;
+    });
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.data['title'])),
+      body: Padding(
           padding: EdgeInsets.all(12.0),
-          child: exerciseData != null
-              ? getTextWidgets(exerciseData)
-              : Center(
-                  child: Text(
-                  "Loading...",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
-                ))),
+          child: Wrap(children: [
+            subTitle.length > 0
+                ? Text(
+                    subTitle.toString().substring(3, 52),
+                    style: TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.grey[800],
+                        fontWeight: FontWeight.w700),
+                  )
+                : Text(""),
+            SizedBox(height: 100.0),
+            Wrap(
+                children: excerciseQuestion.map((e) {
+              return Wrap(children: [
+                Text(e.trim(),
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600))
+              ]);
+            }).toList()),
+            Wrap(
+                children: availableOptionData.map((opt) {
+                return Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(children: [
+                    SizedBox(height: 18.0),
+                    FlatButton(
+                        onPressed: () {},
+                        child: Text(opt),
+                        color: Colors.amber),
+                    SizedBox(width: 12.0)
+                  ]),
+                );
+              }).toList()
+            ),
+            SizedBox(height: 210.0),
+        Center(
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Wrap(children: [
+            FlatButton(
+              onPressed: () {},
+              color: Colors.blue[500],
+              textColor: Colors.white,
+              child: Text(
+                'Check Answers',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
+            ),
+            SizedBox(width: 6.0),
+            FlatButton(
+              onPressed: () {},
+              color: Colors.red[300],
+              textColor: Colors.white,
+              child: Text(
+                'Clear',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
+            ),
+            SizedBox(width: 6.0),
+            FlatButton(
+              onPressed: () {},
+              color: Colors.grey,
+              textColor: Colors.white,
+              child: Text(
+                'Retry',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+              ),
+            )
+          ])
+        ])),
+        Center(
+            child: FlatButton(
+          onPressed: () {},
+          color: Colors.green[300],
+          textColor: Colors.white,
+          child: Text(
+            'Show Correct Answers',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+          ),
+        ))
+          ])),
     );
   }
 }
