@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -22,6 +23,7 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
         "https://getestoscar.blob.core.windows.net/content/test/lesson/61f7efc9-c3db-4142-8b06-9bc0f5d915f9/default.json";
     Response response = await get(endPoint);
     if (response.statusCode == 200) {
+      // TODO: rename exec
       final exec = activityPlayerDataFromJson(response.body);
       final fillInTheGapsClick = [];
       int index = 0;
@@ -124,7 +126,6 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
                 FlatButton(
                     onPressed: () {
                       controller.text = opt;
-                      print(controller);
                     },
                     child: Text(opt),
                     color: Colors.amber),
@@ -211,9 +212,18 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
     ]);
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: new Center(child: new SvgPicture.asset('assets/learnship-logo.svg',
+        height: 24.0,
+        )),
+        backgroundColor: Colors.grey[850],
+      ),
+      body: SingleChildScrollView(
           child: Padding(
           padding: EdgeInsets.all(12.0),
           child: exerciseData != null
@@ -226,6 +236,11 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold),
                 ))),
+    ),
     );
+    
+    
+    
+    
   }
 }
