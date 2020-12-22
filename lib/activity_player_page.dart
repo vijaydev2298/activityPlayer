@@ -16,6 +16,7 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
   TextEditingController controller = TextEditingController();
   List optionsAndAns = [];
   String isRight = "null";
+  List answers = [];
 
   Future<ActivityPlayerData> getActivityPlayerData() async {
     String endPoint =
@@ -65,6 +66,16 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
             userDisplayOptions.insert(i, obj['label']);
           }
         }
+        var textEditingControllers = <TextEditingController>[];
+        var textFields = <TextField>[];
+        userDisplayOptions.forEach((str) {
+          var textEditingController = new TextEditingController(text: str);
+          textEditingControllers.add(textEditingController);
+          return textFields.add(new TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(border: OutlineInputBorder()),
+          ));
+        });
         setState(() {
           optionsAndAns = userDisplayOptions;
         });
@@ -105,12 +116,8 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
                       width: 140.0,
                       height: 20.0,
                       child: TextFormField(
-                        controller: controller,
-                        autofocus: true,
-                        keyboardType: TextInputType.text,
+                        //controller: answers[0].text,
                         readOnly: true,
-                        showCursor: true,
-                        focusNode: myFocusNode,
                         decoration:
                             InputDecoration(border: OutlineInputBorder()),
                       )),
@@ -120,11 +127,18 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
             SizedBox(height: 12.0),
             Wrap(
                 children: userDisplayOptions.map((opt) {
+              int counter = 0;
               return Row(children: [
                 FlatButton(
                     onPressed: () {
-                      controller.text = opt;
-                      print(controller);
+                      setState(() {
+                        TextEditingController $opt =
+                            new TextEditingController();
+                        $opt.text = opt;
+                        answers.insert(counter, $opt);
+                      });
+                      print(answers);
+                      counter = counter + 1;
                     },
                     child: Text(opt),
                     color: Colors.amber),
@@ -135,48 +149,36 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
         );
       }).toList()),
       Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Wrap(
-            children: [
-                FlatButton(
-        onPressed: () {
-          String textBoxAnswer = controller.text;
-          String isCorrect =
-              optionsAndAns[0] == textBoxAnswer ? "true" : "false";
-          setState(() {
-            isRight = isCorrect;
-          });
-        },
-        color: Colors.blue[500],
-        textColor: Colors.white,
-        child: Text(
-          'Check Answers',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-        ),
-      ),
-      SizedBox(width: 6.0),
-      FlatButton(
-        onPressed: () {
-          setState(() {
-            controller.text = "";
-          });
-        },
-        color: Colors.red[300],
-        textColor: Colors.white,
-        child: Text(
-          'Clear',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-        ),
-      ),
-            ]
-          )
-        ]
-      )),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Wrap(children: [
+          FlatButton(
+            onPressed: () {},
+            color: Colors.blue[500],
+            textColor: Colors.white,
+            child: Text(
+              'Check Answers',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            ),
+          ),
+          SizedBox(width: 6.0),
+          FlatButton(
+            onPressed: () {
+              setState(() {
+                controller.text = "";
+              });
+            },
+            color: Colors.red[300],
+            textColor: Colors.white,
+            child: Text(
+              'Clear',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+            ),
+          ),
+        ])
+      ])),
       Center(
-        child: Row(
-        mainAxisAlignment:  MainAxisAlignment.center,
+          child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           FlatButton(
             onPressed: () {
@@ -206,15 +208,14 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
             ),
           ),
         ],
-      )
-      )
+      ))
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-          child: Padding(
+      child: Padding(
           padding: EdgeInsets.all(12.0),
           child: exerciseData != null
               ? getTextWidgets(exerciseData)
