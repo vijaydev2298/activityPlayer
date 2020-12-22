@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:activity_player_app/activities/speech_to_text.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -237,7 +238,7 @@ class App extends StatelessWidget {
         )),
         backgroundColor: Colors.grey[850],
       ),
-      body: createContent(),
+      body: VoiceHome(),
     );
   }
 
