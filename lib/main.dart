@@ -25,7 +25,7 @@ class App extends StatelessWidget {
         backgroundColor: Colors.grey[500],
         elevation: 0,
       ),
-      body: ActivityPlayer()//createContent(),
+      body: ActivityPlayer(), //createContent(),
     );
   }
 

@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final activityPlayerData = activityPlayerDataFromJson(jsonString);
-
 import 'dart:convert';
 
 ActivityPlayerData activityPlayerDataFromJson(String str) => ActivityPlayerData.fromJson(json.decode(str));
@@ -131,7 +127,7 @@ class Exercise {
     "subtitle": subtitle,
     "image": image == null ? null : image,
     "help": help,
-    "config": config,
+    "config": config.content,
     "scorable": scorable == null ? null : scorable,
     "defaultScore": defaultScore == null ? null : List<dynamic>.from(defaultScore.map((x) => x.toJson())),
     "htmlContent": htmlContent == null ? null : htmlContent,
