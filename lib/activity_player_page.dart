@@ -12,6 +12,24 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
   List<String> question = [];
   String subTitle = "";
   List<String> availableOptions = [];
+  List controllers = [];
+
+  Widget getTextFormField(singleOption) {
+    List<TextEditingController> textEditControllers = [];
+    var textField = <TextField>[];
+    var textEditController = new TextEditingController();
+    textEditControllers.insert(0, textEditController);
+    textField.add(TextField(
+      controller: textEditController,
+      autofocus: true,
+      enabled: false,
+      decoration: InputDecoration(border: OutlineInputBorder()),
+    ));
+    setState(() {
+      controllers.insert(0, textEditControllers[0]);
+    });
+    return Wrap(children: [textField[0], SizedBox(height: 12.0)]);
+  }
 
   void initState() {
     super.initState();
@@ -60,7 +78,15 @@ class _ActivityPlayerState extends State<ActivityPlayer> {
               return Wrap(children: [
                 Text(e.trim(),
                     style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600))
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600)),
+                SizedBox(height: 20.0),
+                Container(
+                  color: Colors.blueGrey[100],
+                  width: 140.0,
+                  height: 20.0,
+                  child: getTextFormField(e),
+                  margin: EdgeInsets.all(2.0),
+                )
               ]);
             }).toList()),
             Wrap(

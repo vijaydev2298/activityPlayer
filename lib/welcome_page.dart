@@ -40,7 +40,12 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text('Activities')),
+      appBar: AppBar(title: Text('Activities',
+        style: TextStyle(
+          fontSize: 24.0,
+          color: Colors.black
+        ),
+      ), centerTitle: true,backgroundColor: Colors.white,),
       body: Container(
         child: FutureBuilder(
           future: getJson(),

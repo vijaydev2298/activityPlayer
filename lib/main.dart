@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:activity_player_app/activities/speech_to_text.dart';
+import 'package:activity_player_app/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -238,7 +239,15 @@ class App extends StatelessWidget {
         )),
         backgroundColor: Colors.grey[850],
       ),
-      body: VoiceHome(),
+      body: WelcomePage(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.keyboard_voice),
+        onPressed: (){
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => VoiceHome())
+          );
+        },
+      ),
     );
   }
 
